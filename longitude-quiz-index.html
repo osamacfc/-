@@ -1,0 +1,150 @@
+
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تحدي خطوط الطول</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      text-align: center;
+      background-color: #f0f8ff;
+      padding: 20px;
+      direction: rtl;
+    }
+    #quiz-box, #result-box {
+      display: none;
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .correct {
+      background-color: #c8e6c9;
+    }
+    .wrong {
+      background-color: #ffcdd2;
+    }
+  </style>
+</head>
+<body>
+  <h1>تحدي خطوط الطول</h1>
+  <div id="start-box">
+    <p>أدخل اسمك للبدء:</p>
+    <input type="text" id="player-name">
+    <br>
+    <button onclick="startQuiz()">ابدأ</button>
+  </div>
+
+  <div id="quiz-box">
+    <h2 id="question-text"></h2>
+    <div id="choices"></div>
+  </div>
+
+  <div id="result-box">
+    <h2>انتهت اللعبة!</h2>
+    <p id="final-score"></p>
+    <p id="time-taken"></p>
+    <button onclick="location.reload()">إعادة المحاولة</button>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        question: "كم عدد خطوط الطول؟",
+        choices: ["90", "180", "360", "24"],
+        answer: "360"
+      },
+      {
+        question: "تعتبر خطوط الطول  ؟",
+        choices: ["حقيقة", "وهمية", "بعضها حقيقي", "تظهر فقط في أوروبا"],
+        answer: "وهمية"
+      },
+      {
+        question: "ما الخط الرئيسي الذي يُقسم الأرض إلى شرق وغرب؟",
+        choices: ["خط الاستواء", "خط العرض 90", "خط جرينتش", "خط طول 13"],
+        answer: "خط جرينتش"
+      },
+      {
+        question: "كم الوقت بين خطي طول متتاليين؟",
+        choices: ["15 دقيقة", "30 دقيقة", "4 دقائق", "ساعة"],
+        answer: "4 دقائق"
+      },
+      {
+        question: "كل 15 درجة من خطوط الطول تمثل فرق زمن قدره؟",
+        choices: ["ساعة", "دقيقتين", "نصف ساعة", "خمس ساعات"],
+        answer: "ساعة"
+      },
+      {
+        question: "لماذا يسبق الشرق الغرب في الوقت؟",
+        choices: ["لأن الشمس تشرق من الشرق", "لأن الأرض تدور من الغرب", "لأن الغرب أسرع", "لا يوجد فرق"],
+        answer: "لأن الشمس تشرق من الشرق"
+      }
+    ];
+
+    let current = 0;
+    let score = 0;
+    let startTime;
+
+    function startQuiz() {
+      const name = document.getElementById('player-name').value;
+      if (!name) return alert("يرجى إدخال الاسم.");
+      document.getElementById('start-box').style.display = 'none';
+      document.getElementById('quiz-box').style.display = 'block';
+      startTime = new Date();
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const q = questions[current];
+      document.getElementById('question-text').textContent = q.question;
+      const choicesDiv = document.getElementById('choices');
+      choicesDiv.innerHTML = '';
+      const shuffled = q.choices.sort(() => 0.5 - Math.random());
+      shuffled.forEach(choice => {
+        const btn = document.createElement('button');
+        btn.textContent = choice;
+        btn.onclick = () => checkAnswer(choice);
+        choicesDiv.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(choice) {
+      const buttons = document.querySelectorAll('#choices button');
+      buttons.forEach(btn => btn.disabled = true);
+      if (choice === questions[current].answer) {
+        event.target.classList.add('correct');
+        score++;
+      } else {
+        event.target.classList.add('wrong');
+      }
+      setTimeout(() => {
+        current++;
+        if (current < questions.length) {
+          showQuestion();
+        } else {
+          endQuiz();
+        }
+      }, 1000);
+    }
+
+    function endQuiz() {
+      const endTime = new Date();
+      const timeDiff = Math.round((endTime - startTime) / 1000);
+      document.getElementById('quiz-box').style.display = 'none';
+      document.getElementById('result-box').style.display = 'block';
+      document.getElementById('final-score').textContent = `درجتك: ${score} من ${questions.length}`;
+      document.getElementById('time-taken').textContent = `الوقت المستغرق: ${timeDiff} ثانية`;
+    }
+  </script>
+</body>
+</html>
